@@ -1,0 +1,11 @@
+ul.checkgroup label {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+#hhh {
+  color: rgba(20, 0, 111, 0.8);
+}
