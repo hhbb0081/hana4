@@ -1,0 +1,15 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "main": "array.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "moment": "^2.30.1",
+    "yarn": "^1.22.22"
+  }
+}

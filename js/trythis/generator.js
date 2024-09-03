@@ -58,32 +58,57 @@ function ex02() {
     }
 
     *[Symbol.iterator]() {
-      if (this.startIdx > this.endIdx) {
-        let i = this.startIdx;
-        while (true) {
-          console.log("🚀 ~ Subway ~ ex02 ~ i:", i);
-
-          yield LINE2[i++ % LINE2.length];
-          if ((i % LINE2.length) - 1 === this.endIdx) break;
-        }
-      } else {
-        for (let i = this.startIdx; i <= this.endIdx; i++) {
-          yield LINE2[i];
-        }
+      let i = this.startIdx;
+      while (true) {
+        yield LINE2[i++ % LINE2.length];
+        if ((i % LINE2.length) - 1 === this.endIdx) break;
       }
     }
   }
 
-  // const routes = new Subway("문래", "신림");
-  // const it1 = routes[Symbol.iterator]();
-  // console.log([...routes]); // [ '문래', '대림', '구로디지털단지', '신대방', '신림' ]
-  // console.log(it1.next()); // { value: '문래', done: false }
-  // console.log(it1.next()); // { value: '대림', done: false }
-  // console.log(it1.next()); // { value: '구로디지털단지', done: false }
-  // console.log(it1.next()); // { value: '신대방', done: false }
-  // console.log(it1.next()); // { value: '신림', done: false }
-  // console.log(it1.next()); // { value: undefined, done: true }
-  // console.log(it1.next()); // { value: undefined, done: true }
+  class Subway2 {
+    // private
+    #start;
+    #end;
+    #currIdx;
+    #didEnd = false;
+    constructor(start, end) {
+      this.#start = start;
+      this.#end = end;
+      this.#currIdx = LINE2.indexOf(start);
+    }
+
+    nextStation() {
+      if (this.#currIdx === LINE2.length) this.#currIdx = 0;
+      LINE2[this.#currIdx++];
+      this.#didEnd = curStation === this.#end;
+      return curStation;
+    }
+    *[Symbol.iterator]() {
+      while (true) {
+        if (this.#didEnd) {
+          this.#didEnd = false;
+          this.#currIdx = LINE2.indexOf(this.#start);
+          break;
+        }
+
+        yield nextStation();
+      }
+    }
+  }
+
+  const routes = new Subway("문래", "신림");
+  const it1 = routes[Symbol.iterator]();
+  console.log([...routes]); // [ '문래', '대림', '구로디지털단지', '신대방', '신림' ]
+  console.log([...routes]); // [ '문래', '대림', '구로디지털단지', '신대방', '신림' ]
+  console.log([...routes]); // [ '문래', '대림', '구로디지털단지', '신대방', '신림' ]
+  console.log(it1.next()); // { value: '문래', done: false }
+  console.log(it1.next()); // { value: '대림', done: false }
+  console.log(it1.next()); // { value: '구로디지털단지', done: false }
+  console.log(it1.next()); // { value: '신대방', done: false }
+  console.log(it1.next()); // { value: '신림', done: false }
+  console.log(it1.next()); // { value: undefined, done: true }
+  console.log(it1.next()); // { value: undefined, done: true }
 
   const routes2 = new Subway("구로디지털단지", "성수"); // 32개 정거장
   console.log([...routes2]); // ['구로디지털단지', '신대방', ..., '성수']
@@ -94,14 +119,14 @@ function ex02() {
     if (x.done) break;
   }
 
-  // const route3 = new Subway("문래", "합정"); // 46개 정거장이면 통과!
-  // console.log("🚀 ~ ex02 ~ route3:", [...route3]);
+  const route3 = new Subway("문래", "합정"); // 46개 정거장이면 통과!
+  console.log("🚀 ~ ex02 ~ route3:", [...route3]);
 
-  // const route4 = new Subway("신도림", "을지로입구"); // 48개 정거장이면 통과
-  // console.log("🚀 ~ ex02 ~ route4:", [...route4]);
+  const route4 = new Subway("신도림", "을지로입구"); // 48개 정거장이면 통과
+  console.log("🚀 ~ ex02 ~ route4:", [...route4]);
 }
 
-// ex02();
+ex02();
 
 function ex03() {
   const assert = require("assert");
@@ -244,4 +269,40 @@ function ex03() {
   assert.deepStrictEqual(alist.clear(), []); // all clear
 }
 
-ex03();
+// ex03();
+
+// const readline = require("readline");
+// const { stdin: input, stdout: output } = require("process");
+
+// function* add() {
+//   const x = yield "첫 번째 수";
+//   const y = yield "두 번째 수?";
+//   return x + y;
+// }
+
+// const rl = readline.createInterface({ input, output });
+
+// const itAdd = add();
+
+// rl.on("line", (answer) => {
+//   const { value, done } = itAdd.next(+answer);
+//   if (done) {
+//     console.log("Total:", value);
+//     rl.close();
+//   } else {
+//     console.log(value);
+//   }
+// });
+
+// rl.on("close", function () {
+//   console.log("exit!!");
+//   process.exit();
+// });
+
+// // console.log(itAdd.next().value);
+// // console.log(itAdd.next(1).value);
+// // console.log(itAdd.next(2).value);
+
+// console.log(itAdd.next().value);
+// console.log(itAdd.next(2).value);
+// console.log(itAdd.next(3).value);
