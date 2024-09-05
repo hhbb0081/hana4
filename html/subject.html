@@ -11,19 +11,33 @@
       <label id="kor">요일을 선택하세요!</label>
     </div>
     <div>
-      <button id="btnMath" onclick="setWeek()">수학 수업 요일선택 ></button>
+      <button id="btnMath" onclick="throttleSetWeek()">
+        수학 수업 요일선택 >
+      </button>
       <label id="math">요일을 선택하세요!</label>
     </div>
 
-    <input id="searchInput" onchange="searchKeyword()" />
-    <div id="searchRes"></div>
+    <div>
+      <input id="searchInput" onchange="searchKeyword()" />
+      <div id="searchRes"></div>
+    </div>
 
     <script>
-      // 디바운스 & 쓰로틀링
+      const weeks = "일월화수목금토";
+
+      // 디바운스 & 쓰로틀링 (평가문제)
+      const debounce = (cb, delay) => {
+        let timer;
+        return (...args) => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(cb, delay, ...args);
+        }
+      }
+
       const throttle = (cb, delay) => {
         let timer;
         return (...args) => {
-          if (timer) return;
+          if (timer) return; // timer가 도는 동안은 이벤트 무시
           timer = setTimeout(() => {
             cb(...args);
             timer = null;
@@ -37,7 +51,6 @@
         document.getElementById("searchRes").innerText = keyword
       }, 500);
 
-      const weeks = "일월화수목금토";
       const getNextWeek = () => {
         let widx = -1;
         return () => {
@@ -62,10 +75,13 @@
           nextWeekFunction[subject]();
       };
 
+      const throttleSetWeek = throttle(setWeek, 500);
+
       window.addEventListener("load", () => {
-        document.getElementById("btnKor").addEventListener("click", () => {
+        const fn = debounce(() => {
           console.log("setWeek!");
-        });
+        }, 200);
+        document.getElementById("btnKor").addEventListener("click", fn);
         console.log("loaded!");
       });
 

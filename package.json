@@ -5,5 +5,22 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.10"
-  }
+  },
+  "name": "hana4-hhbb0081",
+  "version": "1.0.0",
+  "description": "-feature11\r -develop",
+  "main": "main",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hhbb0081/hana4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hhbb0081/hana4/issues"
+  },
+  "homepage": "https://github.com/hhbb0081/hana4#readme"
 }
