@@ -252,7 +252,7 @@ function ex03() {
     rest: { value: 33, rest: { value: 22, rest: { value: 3 } } },
   });
   console.log(alist.toString());
-  // alist.toString(); // ArrayList(4) { value: 1, rest: { value: 33, rest: { value: 22, rest: { value: 3 } } } }
+  alist.toString(); // ArrayList(4) { value: 1, rest: { value: 33, rest: { value: 22, rest: { value: 3 } } } }
   assert.deepStrictEqual(alist.set(1, 300), {
     value: 1,
     rest: { value: 300, rest: { value: 22, rest: { value: 3 } } },
