@@ -1,5 +1,6 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { useSession } from "../hooks/session-context";
+import { useDebounce } from "../hooks/timer-hook";
 import { CartType } from "../types/props";
 import Button from "./atoms/Button";
 import CartItem from "./CartItem";
@@ -9,6 +10,8 @@ import Profile from "./Profile";
 function My() {
   const { session, login, logout, removeCartItem, addCartItem } = useSession();
   const { loginUser, cart } = session;
+  // const { clear } = useInterval(() => console.log("X"), 1000);
+  // const { reset } = useTimeout(() => console.log(`Hello, ${name}!!!`), 3000);
 
   // 편집 여부
   const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +20,19 @@ function My() {
   // const logoutButtonRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
+
+  // 아이템 검색
+  const itemRef = useRef<HTMLInputElement>(null);
+  const [item, setItem] = useState("");
+
+  useDebounce(
+    () => {
+      console.log("상품 검색 useDebounce 실행");
+      setItem(itemRef.current?.value || "");
+    },
+    500,
+    [itemRef.current?.value]
+  );
 
   // 아이템 삭제
   const removeItem = (id: number) => {
@@ -50,7 +66,7 @@ function My() {
 
   // 아이템 수정
   const [cartList, setCartList] = useState<CartType[]>(cart);
-  const modifyItem = ({ id, name, price }: CartType) => {
+  const modifyItem = (id: number, name: string, price: number) => {
     const newCartList = [
       ...cartList,
       ...cartList
@@ -66,6 +82,14 @@ function My() {
     setCartList(newCartList);
   };
 
+  const totalPrice = useMemo(() => {
+    session.cart.reduce((acc, cur) => {
+      acc += +cur.price;
+      return +acc;
+    }, 0);
+  }, [session.cart]);
+  console.log("🚀 ~ totalPrice ~ totalPrice:", totalPrice);
+
   return (
     <>
       {session.loginUser ? (
@@ -73,20 +97,24 @@ function My() {
       ) : (
         <Login login={login} />
       )}
+      <input
+        type="text"
+        ref={itemRef}
+        // onChange={(e) =>}
+        placeholder="상품 검색"
+        className="inp"
+      />
+
       <ul style={{ border: "1px solid #666", padding: "1rem" }}>
-        {cart?.map(({ id, name, price }) => {
-          // key는 fiber가 인식할 수 있어야하기 때문에 필수
-          // key를 index로 하면 안되는 이유: 데이터가 삭제되거나 추가되면 idx가 바뀌어서 fiber가 제대로 인식하지 못함
-          return (
-            <CartItem
-              key={id}
-              id={id}
-              name={name}
-              price={+price}
-              modifyItem={modifyItem}
-            />
-          );
-        })}
+        {cart
+          ?.filter(({ name }) => name.includes(item))
+          ?.map((item) => {
+            // key는 fiber가 인식할 수 있어야하기 때문에 필수
+            // key를 index로 하면 안되는 이유: 데이터가 삭제되거나 추가되면 idx가 바뀌어서 fiber가 제대로 인식하지 못함
+            return (
+              <CartItem key={item.id} item={item} modifyItem={modifyItem} />
+            );
+          })}
         {isEditing ? (
           <form onSubmit={addItem}>
             <div>
@@ -102,12 +130,12 @@ function My() {
                 ref={priceRef}
                 className="inp"
               />
-              <Button type="reset" text="cancel" onClick={toggleEditing} />
-              <Button type="submit" text="Save" />
+              <Button type="reset" onClick={toggleEditing} />
+              <Button type="submit" />
             </div>
           </form>
         ) : (
-          <Button text="+Add Item" onClick={toggleEditing} />
+          <Button onClick={toggleEditing} />
         )}
       </ul>
     </>

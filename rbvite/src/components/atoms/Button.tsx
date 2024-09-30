@@ -1,27 +1,22 @@
-import React from "react";
+import { ButtonHTMLAttributes, PropsWithChildren } from "react";
 
-function Button({
-  text = "",
-  type = "button",
-  variant,
-  classNames = "",
-  onClick = () => {},
-}: {
-  text: string;
-  type?: "button" | "submit" | "reset";
+type Props = {
   variant?: string;
   classNames?: string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}) {
+} & ButtonHTMLAttributes<HTMLButtonElement>;
+
+export default function Button({
+  children,
+  variant = "",
+  classNames = "",
+  ...props
+}: PropsWithChildren<Props>) {
   return (
     <button
-      className={`${variant && variant} ${classNames && classNames}`}
-      onClick={onClick}
-      type={type}
+      {...props}
+      className={`btn ${variant} ${classNames} inline-flex items-center gap-1 normal-case`}
     >
-      {text}
+      {children}
     </button>
   );
 }
-
-export default Button;
