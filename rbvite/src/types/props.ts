@@ -17,7 +17,9 @@ export type MyProps = {
   // eslint-disable-next-line no-unused-vars
   removeCartItem: (id: number) => void;
   // eslint-disable-next-line no-unused-vars
-  addCartItem: (name: string, price: number) => void;
+  addCartItem: (data: Omit<CartType, "id">) => void;
+  // eslint-disable-next-line no-unused-vars
+  editCartItem: (data: CartType) => void;
 };
 
 export type LoginUserType = {

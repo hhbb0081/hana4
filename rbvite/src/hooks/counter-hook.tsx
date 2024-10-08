@@ -1,4 +1,14 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+} from "react";
+
+export type Action = {
+  type: string;
+  payload: unknown;
+};
 
 type CounterContextProps = {
   count: number;
@@ -17,10 +27,27 @@ export const CounterProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [count, setCount] = useState(0);
+  const reducer = (count: number, { type, payload }: Action) => {
+    switch (type) {
+      case "plus":
+        return count + ((payload as number) ?? 1);
+      case "minus":
+        return count - 1;
+      default:
+        return count;
+    }
+  };
 
-  const plusCount = () => setCount((prev) => prev + 1);
-  const minusCount = () => setCount((prev) => prev - 1);
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  const plusCount = useCallback((value?: number) => {
+    // setCount((count) => count + 1)
+    dispatch({ type: "plus", payload: value });
+  }, []);
+
+  const minusCount = useCallback((value?: number) => {
+    dispatch({ type: "minus", payload: value });
+  }, []);
 
   return (
     <CounterContext.Provider value={{ count, plusCount, minusCount }}>

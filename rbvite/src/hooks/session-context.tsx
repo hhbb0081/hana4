@@ -1,15 +1,24 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useLayoutEffect,
+  useReducer,
   useRef,
-  useState,
 } from "react";
 // import { LoginHandler } from "../components/Login";
 import { LoginHandler } from "../components/Login";
 import { SampleSession } from "../constants/const";
-import { MyProps, SessionType } from "../types/props";
+import { CartType, LoginUserType, MyProps, SessionType } from "../types/props";
 import { useFetch } from "./fetch-hook";
+
+type Action =
+  | { type: "initialize"; payload: SessionType | undefined }
+  | { type: "login"; payload: LoginUserType }
+  | { type: "logout" }
+  | { type: "addCartItem"; payload: Omit<CartType, "id"> }
+  | { type: "removeCartItem"; payload: number }
+  | { type: "editCartItem"; payload: CartType };
 
 const initialValue = {
   session: SampleSession,
@@ -23,6 +32,9 @@ const initialValue = {
   addCartItem: (name: string, price: number) => {
     console.log(name, price);
   },
+  editCartItem: (id: number, name: string, price: number) => {
+    console.log(id, name, price);
+  },
 };
 const SessionContext = createContext<MyProps>(initialValue);
 
@@ -31,7 +43,60 @@ export const SessionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [session, setSession] = useState<SessionType>(SampleSession);
+  const SampleSession: SessionType = {
+    loginUser: null,
+    cart: [],
+  };
+
+  // 리듀서 함수
+  const reducer = (session: SessionType, action: Action): SessionType => {
+    switch (action.type) {
+      case "initialize":
+        return action.payload || SampleSession;
+      case "login":
+        return { ...session, loginUser: action.payload };
+      case "logout":
+        return { ...session, loginUser: null };
+      case "addCartItem":
+        return {
+          ...session,
+          cart: [...session.cart, { id: Math.random(), ...action.payload }],
+        };
+      case "removeCartItem":
+        return {
+          ...session,
+          cart: session.cart.filter((el) => el.id !== action.payload),
+        };
+      case "editCartItem":
+        return {
+          ...session,
+          cart: session.cart.map((el) =>
+            el.id === action.payload.id ? { ...el, ...action.payload } : el
+          ),
+        };
+      default:
+        return session;
+    }
+  };
+
+  // useReducer 훅 및 세션 초기화 함수
+  const [session, dispatch] = useReducer(reducer, SampleSession);
+
+  const setSession = useCallback((value?: SessionType) => {
+    dispatch({ type: "initialize", payload: value });
+  }, []);
+
+  const addCartItem = useCallback((value: Omit<CartType, "id">) => {
+    dispatch({ type: "addCartItem", payload: value });
+  }, []);
+
+  const removeCartItem = useCallback((value: number) => {
+    dispatch({ type: "removeCartItem", payload: value });
+  }, []);
+
+  const editCartItem = useCallback((value: CartType) => {
+    dispatch({ type: "editCartItem", payload: value });
+  }, []);
 
   const { data } = useFetch<SessionType>("/data/sample.json") || SampleSession;
 
@@ -63,27 +128,34 @@ export const SessionProvider = ({
   };
 
   // 아이템 지우기
-  const removeCartItem = (cartId: number) => {
-    if (session) {
-      const newCart = session.cart.filter((el) => el.id !== cartId);
-      setSession({ ...session, cart: newCart });
-    }
-  };
+  // const removeCartItem = (cartId: number) => {
+  //   if (session) {
+  //     const newCart = session.cart.filter((el) => el.id !== cartId);
+  //     setSession({ ...session, cart: newCart });
+  //   }
+  // };
 
   // 아이템 추가
-  const addCartItem = (name: string, price: number) => {
-    if (session) {
-      const newCart = [
-        ...session.cart,
-        { id: Math.random(), name: name, price: price },
-      ];
-      setSession({ ...session, cart: newCart });
-    }
-  };
+  // const addCartItem = (name: string, price: number) => {
+  //   if (session) {
+  //     const newCart = [
+  //       ...session.cart,
+  //       { id: Math.random(), name: name, price: price },
+  //     ];
+  //     setSession({ ...session, cart: newCart });
+  //   }
+  // };
 
   return (
     <SessionContext.Provider
-      value={{ session, login, logout, removeCartItem, addCartItem }}
+      value={{
+        session,
+        login,
+        logout,
+        removeCartItem,
+        addCartItem,
+        editCartItem,
+      }}
     >
       {children}
     </SessionContext.Provider>

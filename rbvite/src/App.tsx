@@ -1,20 +1,23 @@
 import { useRef, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Hello, { MyHandler } from "./components/Hello";
+import Hello from "./components/Hello";
+import Login from "./components/Login";
 import My from "./components/My";
-import { CounterProvider, useCounter } from "./hooks/counter-hook";
+import Nav from "./components/Nav";
+import { CounterProvider } from "./hooks/counter-hook";
 import { SessionProvider } from "./hooks/session-context";
 import { useDebounce } from "./hooks/timer-hook";
-import useToggle from "./hooks/toggle";
+// import useToggle from "./hooks/toggle";
 
 function App() {
-  const { count, plusCount } = useCounter();
+  // const { count, plusCount } = useCounter();
 
   // const [tCnt, setFriend] = useState(10);
   const [friend, setFriend] = useState(0);
-  const [, toggleReRender] = useToggle();
+  // const [, toggleReRender] = useToggle();
 
-  const myHandlerRef = useRef<MyHandler>(null);
+  // const myHandlerRef = useRef<MyHandler>(null);
   const friendRef = useRef<HTMLInputElement>(null);
 
   useDebounce(
@@ -37,7 +40,7 @@ function App() {
       </div>
       <SessionProvider>
         <CounterProvider>
-          <div className="mt-3 w-64">
+          {/* <div className="mt-3 w-64">
             <input
               type="number"
               defaultValue={friend}
@@ -53,7 +56,17 @@ function App() {
           </div>
           <div className="card">
             <button onClick={plusCount}>count is {count}</button>
-          </div>
+          </div> */}
+          <Nav />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/my" element={<My />} />
+            <Route path="/items" element={<Items />} />
+            <Route path="/items/:id" element={<Item />} />
+            <Route path="/hello" element={<Hello />} />
+            {/* <Route path="*" element={<NotFound />} /> */}
+          </Routes>
         </CounterProvider>
       </SessionProvider>
     </>
