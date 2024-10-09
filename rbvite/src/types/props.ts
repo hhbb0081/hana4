@@ -1,7 +1,7 @@
 // Hello
 export type HelloType = {
-  name: string;
-  age: number;
+  name?: string;
+  age?: number;
   count: number;
   plusCount: () => void;
   minusCount: () => void;
@@ -10,9 +10,16 @@ export type HelloType = {
 // My
 export type MyProps = {
   session: SessionType;
-  isLogined: null | LoginUserType;
+  isLogined?: null | LoginUserType;
   logout: () => void;
-  login: (arg0: LoginUserType) => void;
+  // eslint-disable-next-line no-unused-vars
+  login: (id: number, name: string) => void;
+  // eslint-disable-next-line no-unused-vars
+  removeCartItem: (id: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  addCartItem: (data: Omit<CartType, "id">) => void;
+  // eslint-disable-next-line no-unused-vars
+  editCartItem: (data: CartType) => void;
 };
 
 export type LoginUserType = {
@@ -20,9 +27,7 @@ export type LoginUserType = {
   name: string;
 };
 
-export type CartType = {
-  id: number;
-  name: string;
+export type CartType = LoginUserType & {
   price: number;
 };
 
@@ -31,3 +36,12 @@ export type SessionType = {
   loginUser: LoginUserType | null;
   cart: CartType[];
 };
+
+// Profile
+export type ProfileProps = {
+  name?: string;
+  logout: () => void;
+};
+
+// Login
+export type LoginProps = Pick<MyProps, "login">;
