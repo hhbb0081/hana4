@@ -1,3 +1,4 @@
+import Nav from '@/components/Nav';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import React from 'react';
@@ -29,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <header>
+          <Nav />
+        </header>
+        <main className='flex flex-col items-center'>{children}</main>
+        <footer>Hanaro 2004</footer>
       </body>
     </html>
   );

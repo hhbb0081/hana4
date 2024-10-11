@@ -1,0 +1,19 @@
+@host=http://localhost:3000
+
+### GET books
+GET {{host}}/api/books?searchStr=
+
+### GET book
+GET {{host}}/api/books/1
+
+### add book
+POST {{host}}/api/books
+
+### update a book
+PUT {{host}}/api/books
+
+### remove a book
+DELETE {{host}}/api/books
+
+### GET ttt
+GET {{host}}/api/ttt?q=123
